@@ -858,6 +858,21 @@ compress_filter(struct compress_params *params, int fd_in, int fd_out,
 	va_list args;
 	struct varbuf desc = VARBUF_INIT;
 
+	if (params->program) {
+		struct command cmd;
+		char level[] = "-0";
+
+		command_init(&cmd, params->program, "compress program");
+		command_add_arg(&cmd, params->program);
+
+		level[1] += params->level;
+		command_add_arg(&cmd, level);
+
+		m_dup2(fd_in, STDIN_FILENO);
+		m_dup2(fd_out, STDOUT_FILENO);
+		command_exec(&cmd);
+	}
+
 	va_start(args, desc_fmt);
 	varbuf_vprintf(&desc, desc_fmt, args);
 	va_end(args);

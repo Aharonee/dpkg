@@ -113,6 +113,8 @@ usage(const struct cmdinfo *cip, const char *value)
 "  -S<strategy>                     Set the compression strategy when building.\n"
 "                                     Allowed values: none; extreme (xz);\n"
 "                                     filtered, huffman, rle, fixed (gzip).\n"
+"      --compress-program=<PROG>    Use PROG for compression instead of builtin\n"
+"                                   implementation. (must accept level: -0..-9)\n"
 "\n"));
 
   printf(_(
@@ -218,6 +220,13 @@ set_compress_type(const struct cmdinfo *cip, const char *value)
     warning(_("deprecated compression type '%s'; use xz or gzip instead"), value);
 }
 
+static void
+set_compress_program(const struct cmdinfo *cip, const char *value)
+{
+  free(compress_params.program);
+  compress_params.program = m_strdup(value);
+}
+
 static const struct cmdinfo cmdinfos[]= {
   ACTION("build",         'b', 0, do_build),
   ACTION("contents",      'c', 0, do_contents),
@@ -241,6 +250,7 @@ static const struct cmdinfo cmdinfos[]= {
   { NULL,            'z', 1, NULL,           NULL,         set_compress_level },
   { NULL,            'Z', 1, NULL,           NULL,         set_compress_type  },
   { NULL,            'S', 1, NULL,           NULL,         set_compress_strategy },
+  { "compress-program", 0, 1, NULL,          NULL,         set_compress_program },
   { "showformat",    0,   1, NULL,           &showformat,  NULL             },
   { "help",          '?', 0, NULL,           NULL,         usage            },
   { "version",       0,   0, NULL,           NULL,         printversion     },

@@ -58,6 +58,7 @@ struct compress_params {
 	enum compressor_type type;
 	enum compressor_strategy strategy;
 	int level;
+	char *program;
 };
 
 enum compressor_type compressor_find_by_name(const char *name);
